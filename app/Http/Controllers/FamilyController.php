@@ -3,18 +3,35 @@
 namespace App\Http\Controllers;
 
 use App\Family;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class FamilyController extends Controller
 {
+    protected $family;
+    protected $request;
+
+    /**
+     * FamilyController constructor.
+     *
+     * @param Request $request
+     * @param Family  $family
+     */
+    public function __construct(Request $request, Family $family)
+    {
+        $this->family = $family;
+        $this->request = $request;
+    }
+
     /**
      * Display a listing of the resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return JsonResponse
      */
     public function index()
     {
-        //
+        $response = $this->family->all();
+        return response()->json($response, 200);
     }
 
     /**
@@ -41,12 +58,12 @@ class FamilyController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  \App\family  $family
-     * @return \Illuminate\Http\Response
+     * @return JsonResponse
      */
-    public function show(family $family)
+    public function show()
     {
-        //
+        $response = $this->family->where('family', '=', $this->request->family)->firstOrFail();
+        return response()->json($response, 200);
     }
 
     /**

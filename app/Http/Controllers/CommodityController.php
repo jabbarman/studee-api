@@ -3,18 +3,34 @@
 namespace App\Http\Controllers;
 
 use App\Commodity;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class CommodityController extends Controller
 {
+    protected $commodity;
+    protected $request;
+
+    /**
+     * CommodityController constructor.
+     *
+     * @param Request   $request
+     * @param Commodity $commodity
+     */
+    public function __construct(Request $request, Commodity $commodity)
+    {
+        $this->commodity = $commodity;
+        $this->request = $request;
+    }
     /**
      * Display a listing of the resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return JsonResponse
      */
     public function index()
     {
-        //
+        $response = $this->commodity->all();
+        return response()->json($response, 200);
     }
 
     /**
@@ -41,12 +57,12 @@ class CommodityController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  \App\commodity  $commodity
-     * @return \Illuminate\Http\Response
+     * @return JsonResponse
      */
-    public function show(commodity $commodity)
+    public function show()
     {
-        //
+        $response = $this->commodity->where('commodity', '=', $this->request->commodity)->firstOrFail();
+        return response()->json($response, 200);
     }
 
     /**
