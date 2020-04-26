@@ -47,12 +47,26 @@ class FamilyController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
+     * @param Request $request
+     *
+     * @return JsonResponse
      */
     public function store(Request $request)
     {
-        //
+        $fam = new $this->family;
+        $fam->family = $this->request->family;
+        $fam->family_name = $this->request->family_name;
+
+        try {
+            if ($fam->save()) {
+                return response()->json(['message' => 'success'],201);
+            };
+        } catch (\Exception $exception) {
+            return response()->json([
+                "message" => "not created",
+                "error" => $exception->getMessage()
+            ], 400);
+        }
     }
 
     /**
@@ -80,8 +94,9 @@ class FamilyController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\family  $family
+     * @param Request      $request
+     * @param  \App\family $family
+     *
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, family $family)

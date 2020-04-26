@@ -47,12 +47,26 @@ class SegmentController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
+     * @param Request $request
+     *
+     * @return JsonResponse
      */
     public function store(Request $request)
     {
-        //
+        $seg = new $this->segment;
+        $seg->segment = $this->request->segment;
+        $seg->segment_name = $this->request->segment_name;
+
+        try {
+            if ($seg->save()) {
+                return response()->json(['message' => 'success'],201);
+            };
+        } catch (\Exception $exception) {
+            return response()->json([
+                "message" => "not created",
+                "error" => $exception->getMessage()
+            ], 400);
+        }
     }
 
     /**
@@ -81,8 +95,8 @@ class SegmentController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param Segment  $segment
+     * @param Request $request
+     * @param Segment $segment
      *
      * @return \Illuminate\Http\Response
      */

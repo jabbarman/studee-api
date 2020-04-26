@@ -22,6 +22,7 @@ class CommodityController extends Controller
         $this->commodity = $commodity;
         $this->request = $request;
     }
+
     /**
      * Display a listing of the resource.
      *
@@ -46,12 +47,26 @@ class CommodityController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
+     * @param Request $request
+     *
+     * @return JsonResponse
      */
     public function store(Request $request)
     {
-        //
+        $com = new $this->commodity;
+        $com->commodity = $this->request->commodity;
+        $com->commodity_name = $this->request->commodity_name;
+
+        try {
+            if ($com->save()) {
+                return response()->json(['message' => 'success'],201);
+            };
+        } catch (\Exception $exception) {
+            return response()->json([
+                "message" => "not created",
+                "error" => $exception->getMessage()
+            ], 400);
+        }
     }
 
     /**
@@ -79,8 +94,9 @@ class CommodityController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\commodity  $commodity
+     * @param Request         $request
+     * @param  \App\commodity $commodity
+     *
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, commodity $commodity)
