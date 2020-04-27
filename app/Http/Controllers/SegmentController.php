@@ -95,25 +95,41 @@ class SegmentController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param Request $request
-     * @param Segment $segment
-     *
-     * @return \Illuminate\Http\Response
+     * @return JsonResponse
      */
-    public function update(Request $request, segment $segment)
+    public function update()
     {
-        //
+        $seg = $this->segment->where('segment', '=', $this->request->segment)->firstOrFail();
+        (!empty(trim($this->request->segment_name)) ? $seg->segment_name = (trim($this->request->segment_name)) : null);
+        try {
+            if ($seg->save()) {
+                return response()->json(['message' => 'updated'], 200);
+            }
+        } catch (\Exception $exception) {
+            return response()->json([
+                "message" => "not updated",
+                "error" => $exception->getMessage()
+            ], 400);
+        }
     }
 
     /**
      * Remove the specified resource from storage.
      *
-     * @param  Segment  $segment
-     *
-     * @return \Illuminate\Http\Response
+     * @return JsonResponse
      */
-    public function destroy(segment $segment)
+    public function destroy()
     {
-        //
+        $seg = $this->segment->where('segment', '=', $this->request->segment)->firstOrFail();
+        try {
+            if ($seg->delete()) {
+                return response()->json(['message' => 'deleted'], 200);
+            };
+        } catch (\Exception $exception) {
+            return response()->json([
+                "message" => "not deleted",
+                "error" => $exception->getMessage()
+            ], 400);
+        }
     }
 }

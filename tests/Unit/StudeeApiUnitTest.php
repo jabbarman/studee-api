@@ -120,4 +120,26 @@ class StudeeApiUnitTest extends TestCase
         $response =  $this->post(route('commodity.store'), $data, $header);
         $response->assertStatus(201);
     }
+
+    public function testUpdateSegment()
+    {
+        $needle = 30000000;
+        $data = [
+            'segment_name' => 'Some Segment name (changed)',
+        ];
+
+        $header = [
+            'Accept' => 'application/json',
+        ];
+
+        $response =  $this->put($this->uriBase . 'segment/' . $needle, $data, $header);
+        $response->assertStatus(200);
+    }
+
+    public function testDestroySegment()
+    {
+        $needle = 30000000;
+        $response = $this->delete($this->uriBase . 'segment/' . $needle);
+        $response->assertStatus(200);
+    }
 }
