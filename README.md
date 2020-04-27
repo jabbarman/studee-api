@@ -1,79 +1,116 @@
-<p align="center"><img src="https://res.cloudinary.com/dtfbvvkyp/image/upload/v1566331377/laravel-logolockup-cmyk-red.svg" width="400"></p>
 
-<p align="center">
-<a href="https://travis-ci.org/laravel/framework"><img src="https://travis-ci.org/laravel/framework.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://poser.pugx.org/laravel/framework/d/total.svg" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://poser.pugx.org/laravel/framework/v/stable.svg" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://poser.pugx.org/laravel/framework/license.svg" alt="License"></a>
-</p>
+# Studee Code Challenge
 
-## About Laravel
+## How to run the API
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+The api was developed in a Laradock (https://laradock.io/) docker development environment.
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+e.g. 
+    `docker-compose up -d nginx mysql`
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+set up for multiple projects (https://laradock.io/getting-started/#B)
 
-## Learning Laravel
+the hosts file (`/private/etc/host` on a mac) should contain an entry for the test development site
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+e.g.
+    `127.0.0.1	studee-api.test`
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains over 1500 video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+and the nginx config file (`nginx/sites/studee-api.conf`) in whereever Laradock is instelled, will need to look something like this,
 
-## Laravel Sponsors
+```
+server {
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the Laravel [Patreon page](https://patreon.com/taylorotwell).
+    listen 80;
+    listen [::]:80;
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Cubet Techno Labs](https://cubettech.com)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[British Software Development](https://www.britishsoftware.co)**
-- **[Webdock, Fast VPS Hosting](https://www.webdock.io/en)**
-- **[DevSquad](https://devsquad.com)**
-- [UserInsights](https://userinsights.com)
-- [Fragrantica](https://www.fragrantica.com)
-- [SOFTonSOFA](https://softonsofa.com/)
-- [User10](https://user10.com)
-- [Soumettre.fr](https://soumettre.fr/)
-- [CodeBrisk](https://codebrisk.com)
-- [1Forge](https://1forge.com)
-- [TECPRESSO](https://tecpresso.co.jp/)
-- [Runtime Converter](http://runtimeconverter.com/)
-- [WebL'Agence](https://weblagence.com/)
-- [Invoice Ninja](https://www.invoiceninja.com)
-- [iMi digital](https://www.imi-digital.de/)
-- [Earthlink](https://www.earthlink.ro/)
-- [Steadfast Collective](https://steadfastcollective.com/)
-- [We Are The Robots Inc.](https://watr.mx/)
-- [Understand.io](https://www.understand.io/)
-- [Abdel Elrafa](https://abdelelrafa.com)
-- [Hyper Host](https://hyper.host)
-- [Appoly](https://www.appoly.co.uk)
-- [OP.GG](https://op.gg)
-- [云软科技](http://www.yunruan.ltd/)
+    # For https
+    # listen 443 ssl;
+    # listen [::]:443 ssl ipv6only=on;
+    # ssl_certificate /etc/nginx/ssl/default.crt;
+    # ssl_certificate_key /etc/nginx/ssl/default.key;
 
-## Contributing
+    server_name studee-api.test;
+    root /var/www/studee-api/public;
+    index index.php index.html index.htm;
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+    location / {
+         try_files $uri $uri/ /index.php$is_args$args;
+    }
 
-## Code of Conduct
+    location ~ \.php$ {
+        try_files $uri /index.php =404;
+        fastcgi_pass php-upstream;
+        fastcgi_index index.php;
+        fastcgi_buffers 16 16k;
+        fastcgi_buffer_size 32k;
+        fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+        #fixes timeouts
+        fastcgi_read_timeout 600;
+        include fastcgi_params;
+    }
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+    location ~ /\.ht {
+        deny all;
+    }
 
-## Security Vulnerabilities
+    location /.well-known/acme-challenge/ {
+        root /var/www/letsencrypt/;
+        log_not_found off;
+    }
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+    error_log /var/log/nginx/studee-api_error.log;
+    access_log /var/log/nginx/studee-api_access.log;
+}
 
-## License
+```
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+## Endpoints created
+
+Ideally the endpoints will by documented in something like swagger but here is a list of the routes implemented (via Laravel's artisan command line tool)
+
+```
++--------+-----------+---------------------------+------------------+--------------------------------------------------+--------------+
+| Domain | Method    | URI                       | Name             | Action                                           | Middleware   |
++--------+-----------+---------------------------+------------------+--------------------------------------------------+--------------+
+|        | GET|HEAD  | /                         |                  | Closure                                          | web          |
+|        | POST      | api/class                 | class.store      | App\Http\Controllers\CclassController@store      | api          |
+|        | GET|HEAD  | api/class                 | class.index      | App\Http\Controllers\CclassController@index      | api          |
+|        | GET|HEAD  | api/class/{class}         | class.show       | App\Http\Controllers\CclassController@show       | api          |
+|        | PUT|PATCH | api/class/{class}         | class.update     | App\Http\Controllers\CclassController@update     | api          |
+|        | DELETE    | api/class{class}          |                  | App\Http\Controllers\CclassController@destroy    | api          |
+|        | GET|HEAD  | api/commodity             | commodity.index  | App\Http\Controllers\CommodityController@index   | api          |
+|        | POST      | api/commodity             | commodity.store  | App\Http\Controllers\CommodityController@store   | api          |
+|        | GET|HEAD  | api/commodity/{commodity} | commodity.show   | App\Http\Controllers\CommodityController@show    | api          |
+|        | DELETE    | api/commodity/{commodity} |                  | App\Http\Controllers\CommodityController@destroy | api          |
+|        | PUT|PATCH | api/commodity/{commodity} | commodity.update | App\Http\Controllers\CommodityController@update  | api          |
+|        | GET|HEAD  | api/family                | family.index     | App\Http\Controllers\FamilyController@index      | api          |
+|        | POST      | api/family                | family.store     | App\Http\Controllers\FamilyController@store      | api          |
+|        | GET|HEAD  | api/family/{family}       | family.show      | App\Http\Controllers\FamilyController@show       | api          |
+|        | PUT|PATCH | api/family/{family}       | family.update    | App\Http\Controllers\FamilyController@update     | api          |
+|        | DELETE    | api/family{family}        |                  | App\Http\Controllers\FamilyController@destroy    | api          |
+|        | POST      | api/segment               | segment.store    | App\Http\Controllers\SegmentController@store     | api          |
+|        | GET|HEAD  | api/segment               | segment.index    | App\Http\Controllers\SegmentController@index     | api          |
+|        | GET|HEAD  | api/segment/{segment}     | segment.show     | App\Http\Controllers\SegmentController@show      | api          |
+|        | PUT       | api/segment/{segment}     |                  | App\Http\Controllers\SegmentController@update    | api          |
+|        | DELETE    | api/segment/{segment}     |                  | App\Http\Controllers\SegmentController@destroy   | api          |
+|        | GET|HEAD  | api/user                  |                  | Closure                                          | api,auth:api |
++--------+-----------+---------------------------+------------------+--------------------------------------------------+--------------+
+```
+
+Please note that `PUT` and `DELETE` endpoints have only been created for segments due to time constraints but in a full solution they would be implemented for the other aspects of the data too (but with any extra required logic required to coordinate the numbering).
+
+## Unit Tests
+
+There are 16 unit tests and they are located in `tests/unit/StudeeApiUnitTest.php`
+
+## Assumptions made
+
+The main assumption made was that all the data would need to be updateable, hence the different aspects of the data was separated out into separate tables (i.e. segments, families, classes & commodities).
+
+A complete solution would also incorporate authentication (not implemented) to protect the relevant endpoints and various fields in the db tables would have indices added, made unique and linked to each other as foriegn keys (with cascaded deletes if required)
+
+It's envisioned that there would be need of logic to create new segment, family, etc, numbers based on these not being ones already in use.
+
+# Api schema
+
+Supplied by other means
