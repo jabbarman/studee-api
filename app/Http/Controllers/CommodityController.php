@@ -35,16 +35,6 @@ class CommodityController extends Controller
     }
 
     /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
      * Store a newly created resource in storage.
      *
      * @param Request $request
@@ -78,17 +68,6 @@ class CommodityController extends Controller
     {
         $response = $this->commodity->where('commodity', '=', $this->request->commodity)->firstOrFail();
         return response()->json($response, 200);
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\commodity  $commodity
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(commodity $commodity)
-    {
-        //
     }
 
     /**

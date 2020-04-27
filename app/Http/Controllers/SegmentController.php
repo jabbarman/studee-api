@@ -35,16 +35,6 @@ class SegmentController extends Controller
     }
 
     /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
      * Store a newly created resource in storage.
      *
      * @param Request $request
@@ -78,18 +68,6 @@ class SegmentController extends Controller
     {
         $response = $this->segment->where('segment', '=', $this->request->segment)->firstOrFail();
         return response()->json($response, 200);
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param Segment $segment
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(segment $segment)
-    {
-        //
     }
 
     /**
